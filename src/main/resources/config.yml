@@ -1,0 +1,5 @@
+# Range for the price to go min-max.
+haggle-percentage-range: 10.0
+
+# Cooldown for each haggle attempt in seconds.
+haggle-attempt-cooldown: 60
