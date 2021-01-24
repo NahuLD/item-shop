@@ -48,6 +48,11 @@ repositories {
         url = uri("https://jitpack.io")
     }
 
+    maven {
+        name = "placeholderapi"
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
+
     mavenCentral()
     jcenter()
 }
@@ -59,6 +64,7 @@ dependencies {
         exclude("org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT")
     }
     compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
+    compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("co.aikar:acf-bukkit:0.5.0-SNAPSHOT")
     implementation("de.themoep:minedown:1.6.2-SNAPSHOT")
     implementation(files("libs/InventoryGui.jar"))
@@ -72,9 +78,8 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     arrayOf(
         "co.aikar.commands",
         "co.aikar.locales",
-        "me.tom.sparse.spigot.chat",
         "de.themoep.minedown",
-        "net.wesjd.anvilgui"
+        "de.themoep.inventorygui"
     ).forEach { relocate(it, "${project.group}.shadow.$it") }
 }
 
@@ -83,4 +88,5 @@ bukkit {
     description = "Very nice items shop plugin!"
     main = "me.nahu.itemshop.ItemShopPlugin"
     authors = listOf("NahuLD")
+    depend = listOf("Vault")
 }

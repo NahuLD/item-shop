@@ -1,9 +1,9 @@
 package me.nahu.itemshop.menu.admin;
 
 import de.themoep.inventorygui.DynamicGuiElement;
-import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.GuiElementGroup;
 import de.themoep.inventorygui.InventoryGui;
+import de.themoep.inventorygui.StaticGuiElement;
 import me.nahu.itemshop.ItemShopManager;
 import me.nahu.itemshop.ItemShopPlugin;
 import me.nahu.itemshop.menu.Menu;
@@ -24,8 +24,33 @@ public class AdminConfigurationMenu extends Menu {
     public static final ItemStack EXIT = new ItemStack(Material.WHEAT);
     public static final ItemStack FILLER = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
     private static final ItemStack SORTING = new ItemStack(Material.EYE_OF_ENDER);
-    private static final ItemStack FORWARD_ARROW = new ItemStack(Material.MAGMA_CREAM);
-    private static final ItemStack PREVIOUS_ARROW = new ItemStack(Material.SPECKLED_MELON);
+
+    private static final StaticGuiElement FORWARD_ARROW_ELEMENT = new StaticGuiElement(
+        '>',
+        new ItemStack(Material.MAGMA_CREAM),
+        click -> {
+            int pageNumber = click.getGui().getPageNumber(click.getWhoClicked());
+            if (pageNumber + 1 >= click.getGui().getPageAmount(click.getWhoClicked()))
+                return true;
+            click.getGui().playClickSound();
+            click.getGui().setPageNumber(pageNumber + 1);
+            return true;
+        },
+        color("&aNext Page")
+    );
+    private static final StaticGuiElement PREVIOUS_ARROW_ELEMENT = new StaticGuiElement(
+        '<',
+        new ItemStack(Material.SPECKLED_MELON),
+        click -> {
+            int pageNumber = click.getGui().getPageNumber(click.getWhoClicked());
+            if (pageNumber <= 0)
+                return true;
+            click.getGui().playClickSound();
+            click.getGui().setPageNumber(pageNumber - 1);
+            return true;
+        },
+        color("&aLast Page")
+    );
 
     private final ItemShopPlugin itemShopPlugin;
     private final ItemShopManager itemShopManager;
@@ -52,6 +77,7 @@ public class AdminConfigurationMenu extends Menu {
                 "       pe"
             }
         );
+
         // player inventory handler
         inventoryGui.setPlayerInventoryAction(click -> {
             ItemStack itemStack = click.getEvent().getCurrentItem();
@@ -61,6 +87,7 @@ public class AdminConfigurationMenu extends Menu {
             EditingMenu.editPriceMenu(this, player, itemShopManager.createSellableItem(itemStack, 0));
             return true;
         });
+
         // sorting item
         inventoryGui.addElement(
             new DynamicGuiElement('s', view -> staticElement(
@@ -83,6 +110,7 @@ public class AdminConfigurationMenu extends Menu {
                 }
             ))
         );
+
         // all items
         inventoryGui.addElement(new DynamicGuiElement(' ', viewer -> {
             List<SellableItem> items = itemShopManager.getItems().stream()
@@ -125,9 +153,12 @@ public class AdminConfigurationMenu extends Menu {
             ).forEach(elementGroup::addElement);
             return elementGroup;
         }));
+
         // arrows
-        inventoryGui.addElement(forwardArrow());
-        inventoryGui.addElement(previousArrow());
+        inventoryGui.addElement(FORWARD_ARROW_ELEMENT);
+        inventoryGui.addElement(PREVIOUS_ARROW_ELEMENT);
+
+        // exit
         inventoryGui.addElement(
             staticElement(
                 'e',
@@ -146,34 +177,9 @@ public class AdminConfigurationMenu extends Menu {
                 }
             )
         );
+
         // filler
         inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
         return inventoryGui;
-    }
-
-    private GuiElement previousArrow() {
-        return staticElement(
-            '<', PREVIOUS_ARROW, color("&aLast Page"), click -> {
-                int pageNumber = click.getGui().getPageNumber(click.getWhoClicked());
-                if (pageNumber <= 0)
-                    return true;
-                click.getGui().playClickSound();
-                click.getGui().setPageNumber(pageNumber - 1);
-                return true;
-            }
-        );
-    }
-
-    private GuiElement forwardArrow() {
-        return staticElement(
-            '>', FORWARD_ARROW, color("&aNext Page"), click -> {
-                int pageNumber = click.getGui().getPageNumber(click.getWhoClicked());
-                if (pageNumber + 1 >= click.getGui().getPageAmount(click.getWhoClicked()))
-                    return true;
-                click.getGui().playClickSound();
-                click.getGui().setPageNumber(pageNumber + 1);
-                return true;
-            }
-        );
     }
 }

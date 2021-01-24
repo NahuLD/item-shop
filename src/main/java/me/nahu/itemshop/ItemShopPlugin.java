@@ -73,9 +73,6 @@ public class ItemShopPlugin extends JavaPlugin {
     }
 
     private Economy loadEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return null;
-        }
         return getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
 }

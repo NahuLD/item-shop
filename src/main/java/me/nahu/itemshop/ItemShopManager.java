@@ -15,20 +15,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ItemShopManager {
     private static final Logger LOGGER = Logger.getLogger(ItemShopManager.class.getName());
 
     private final Map<Integer, SellableItem> sellableItems;
+    @SuppressWarnings("UnstableApiUsage")
     private final LoadingCache<UUID, ShopUser> shopUsers = CacheBuilder.newBuilder()
         .expireAfterAccess(5, TimeUnit.MINUTES)
         .build(new CacheLoader<UUID, ShopUser>() {
@@ -49,6 +49,7 @@ public class ItemShopManager {
         LOGGER.info("Loaded '" + sellableItems.size() + "' sellable items.");
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @NotNull
     public ShopUser getShopUser(@NotNull Player player) {
         return shopUsers.getUnchecked(player.getUniqueId());
@@ -82,9 +83,8 @@ public class ItemShopManager {
      * @param items Items to be checked.
      * @return True if there are, false if none.
      */
-    public boolean hasInvalidItems(ItemStack @NotNull... items) {
-        return Stream.of(items)
-            .filter(Objects::nonNull)
+    public boolean hasInvalidItems(@NotNull List<ItemStack> items) {
+        return items.parallelStream()
             .map(this::getItemByItemStack)
             .anyMatch(optional -> !optional.isPresent());
     }

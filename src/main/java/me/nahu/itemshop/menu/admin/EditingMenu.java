@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -70,6 +71,7 @@ public class EditingMenu extends Menu {
                     inputMenu(
                         this,
                         player,
+                        "Edit item material",
                         sellableItem.getMaterial().toString(),
                         input -> {
                             Material newMaterial = Material.matchMaterial(input[0]);
@@ -94,6 +96,7 @@ public class EditingMenu extends Menu {
                     inputMenu(
                         this,
                         player,
+                        "Edit item data",
                         String.valueOf(sellableItem.getData()),
                         input -> {
                             try {
@@ -130,10 +133,14 @@ public class EditingMenu extends Menu {
                     inputMenu(
                         this,
                         player,
+                        "Edit the name",
                         sellableItem.getName().orElse("N/A"),
                         input -> {
-                            String[] newName = color(input[0]);
-                            sellableItem.setName((newName.length <= 0) ? null : newName[0]);
+                            String newName = input[0];
+                            if (newName == null || newName.equals("")) {
+                                return true;
+                            }
+                            sellableItem.setName(color(newName)[0]);
                             return false;
                         }
                     );
@@ -149,7 +156,7 @@ public class EditingMenu extends Menu {
         @NotNull Player player,
         @NotNull SellableItem sellableItem
     ) {
-        inputMenu(menu, player, "$", response -> {
+        inputMenu(menu, player, "Set A Price", "$" + sellableItem.getPrice(), response -> {
             try {
                 int newPrice = Integer.parseInt(response[0]);
                 sellableItem.setPrice(newPrice);
@@ -163,16 +170,20 @@ public class EditingMenu extends Menu {
     private static void inputMenu(
         @NotNull Menu menu,
         @NotNull Player player,
-        @NotNull String text,
+        @Nullable String action,
+        @Nullable String old,
         @NotNull Function<String[], Boolean> response
     ) {
         new SignMenu(menu.getPlugin())
+            .line(1, "^^^")
+            .line(2, (action == null) ? "Input" : action)
+            .line(3, "> " + ((old == null) ? "" : old))
             .listener((clicker, input) -> {
                 if (!response.apply(input)) {
                     menu.open(player);
                     return;
                 }
-                inputMenu(menu, player, text, response); // retry
+                inputMenu(menu, player, action, old, response); // retry
             })
             .show(player);
     }

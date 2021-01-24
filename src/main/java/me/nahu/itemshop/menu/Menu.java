@@ -11,7 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,8 +62,11 @@ public abstract class Menu {
     }
 
     @NotNull
-    public Set<ItemStack> getInventoryContents() {
-        return Stream.of(getVirtualInventory().getContents()).collect(Collectors.toSet());
+    public List<ItemStack> getInventoryContents() {
+        return Stream.of(getVirtualInventory().getContents())
+            .parallel()
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     @NotNull

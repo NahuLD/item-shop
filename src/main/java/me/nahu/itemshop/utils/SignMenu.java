@@ -36,7 +36,7 @@ public class SignMenu {
     private BiConsumer<Player, String[]> listener;
     private String[] lines;
     private BlockPosition position;
-    private boolean color;
+    private boolean color = false;
 
     public SignMenu(@NotNull Plugin plugin) {
         this.plugin = plugin;
@@ -58,7 +58,6 @@ public class SignMenu {
 
         try {
             PacketContainer block = protocol.createPacket(PacketType.Play.Server.BLOCK_CHANGE);
-
             if(lines != null) {
                 PacketContainer update = protocol.createPacket(PacketType.Play.Server.UPDATE_SIGN);
 
@@ -70,10 +69,7 @@ public class SignMenu {
                 protocol.sendServerPacket(player, block);
                 protocol.sendServerPacket(player, update);
             }
-
             protocol.sendServerPacket(player, open);
-            protocol.sendServerPacket(player, block);
-            protocol.sendServerPacket(player, remove);
         } catch (InvocationTargetException e) {
             logger.info("Exception in reflection.");
             return;
@@ -93,8 +89,17 @@ public class SignMenu {
                         throw new IllegalStateException("Sign update called but position not yet set.");
                     }
 
-                    if(SignMenu.this.position.equals(position)) {
-                        Bukkit.getScheduler().runTask(plugin, () -> listener.accept(event.getPlayer(), unwrap(components)));
+                    if(!SignMenu.this.position.equals(position)) {
+                        return;
+                    }
+
+                    event.setCancelled(true);
+                    Bukkit.getScheduler().runTask(plugin, () -> listener.accept(event.getPlayer(), unwrap(components)));
+
+                    try {
+                        protocol.sendServerPacket(player, remove);
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
                     }
                 }
             });

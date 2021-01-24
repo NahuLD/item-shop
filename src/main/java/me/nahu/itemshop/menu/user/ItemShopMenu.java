@@ -14,14 +14,14 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
+import java.util.List;
 import java.util.function.DoubleConsumer;
 
 import static me.nahu.itemshop.menu.admin.AdminConfigurationMenu.FILLER;
 import static me.nahu.itemshop.utils.Utilities.color;
 
 public class ItemShopMenu extends Menu {
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
     private static final ItemStack EMPTY = new ItemStack(Material.BARRIER);
     private static final ItemStack ACCEPT = new ItemStack(Material.POISONOUS_POTATO);
 
@@ -51,7 +51,8 @@ public class ItemShopMenu extends Menu {
 
         ShopUser shopUser = itemShopManager.getShopUser(player);
         inventoryGui.addElement(new DynamicGuiElement('a', (viewer) -> {
-            if (getInventoryContents().size() <= 1) {
+            List<ItemStack> contents = getInventoryContents();
+            if (contents.size() <= 0) {
                 return staticElement(
                     'a',
                     EMPTY,
@@ -66,7 +67,7 @@ public class ItemShopMenu extends Menu {
                     click -> true
                 );
             }
-            if (itemShopManager.hasInvalidItems(getVirtualInventory().getContents())) {
+            if (itemShopManager.hasInvalidItems(contents)) {
                 return staticElement(
                     'a',
                     EMPTY,
@@ -100,10 +101,10 @@ public class ItemShopMenu extends Menu {
                 click -> {
                     switch (click.getType()) {
                         case LEFT:
-                            if (consumer == null) {
-                                break;
+                            if (consumer != null) {
+                                consumer.accept(calculateTotal() * shopUser.getHaggleModifier());
                             }
-                            consumer.accept(calculateTotal() * shopUser.getHaggleModifier());
+                            inventoryGui.destroy();
                             break;
                         case RIGHT:
                             if (!shopUser.canHaggle()) {
@@ -128,6 +129,12 @@ public class ItemShopMenu extends Menu {
         );
 
         inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
+
+        inventoryGui.setCloseAction(close -> {
+            // return items
+            player.getInventory().addItem(getInventoryContents().parallelStream().toArray(ItemStack[]::new));
+            return true;
+        });
         return inventoryGui;
     }
 
@@ -142,9 +149,8 @@ public class ItemShopMenu extends Menu {
     }
 
     private int calculateTotal() {
-        return getInventoryContents().stream()
-            .filter(Objects::nonNull)
-            .mapToInt(itemShopManager::getCombinedPrice)
+        return getInventoryContents().parallelStream()
+            .map(itemShopManager::getCombinedPrice)
             .reduce(0, Integer::sum);
     }
 }

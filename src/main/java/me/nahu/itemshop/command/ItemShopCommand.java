@@ -14,6 +14,8 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import static me.nahu.itemshop.menu.user.ItemShopMenu.DECIMAL_FORMAT;
+
 @CommandAlias("itemshop")
 @CommandPermission("itemshop.*")
 public final class ItemShopCommand extends BaseCommand {
@@ -41,7 +43,7 @@ public final class ItemShopCommand extends BaseCommand {
             EconomyResponse response = economy.depositPlayer(player, amount);
             if (response.transactionSuccess()) {
                 player.spigot().sendMessage(
-                    MineDown.parse(successfulTransaction, "amount", String.valueOf(amount))
+                    MineDown.parse(successfulTransaction, "amount", DECIMAL_FORMAT.format(amount))
                 );
                 return;
             }
