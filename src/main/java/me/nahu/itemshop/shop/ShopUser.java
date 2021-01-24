@@ -44,6 +44,10 @@ public final class ShopUser {
         return (lastHaggleAttempt + haggleAttemptCooldown) <= System.currentTimeMillis();
     }
 
+    public long getNextHaggleAttempt() {
+        return (lastHaggleAttempt + haggleAttemptCooldown);
+    }
+
     public static void setHaggleAttemptCooldown(long haggleAttemptCooldown) {
         ShopUser.haggleAttemptCooldown = haggleAttemptCooldown;
     }

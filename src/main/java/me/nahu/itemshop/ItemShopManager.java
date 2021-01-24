@@ -49,10 +49,15 @@ public class ItemShopManager {
         LOGGER.info("Loaded '" + sellableItems.size() + "' sellable items.");
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @NotNull
     public ShopUser getShopUser(@NotNull Player player) {
-        return shopUsers.getUnchecked(player.getUniqueId());
+        return getShopUser(player.getUniqueId());
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @NotNull
+    public ShopUser getShopUser(@NotNull UUID uniqueId) {
+        return shopUsers.getUnchecked(uniqueId);
     }
 
     /**

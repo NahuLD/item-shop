@@ -2,6 +2,7 @@ package me.nahu.itemshop;
 
 import co.aikar.commands.BukkitCommandManager;
 import me.nahu.itemshop.command.ItemShopCommand;
+import me.nahu.itemshop.papi.ItemShopExpansion;
 import me.nahu.itemshop.shop.SellableItem;
 import me.nahu.itemshop.shop.ShopUser;
 import net.milkbowl.vault.economy.Economy;
@@ -45,6 +46,8 @@ public class ItemShopPlugin extends JavaPlugin {
         commandManager.registerCommand(
             new ItemShopCommand(this)
         );
+
+        new ItemShopExpansion(this).register();
     }
 
     @Override

@@ -22,6 +22,7 @@ import static me.nahu.itemshop.utils.Utilities.color;
 
 public class ItemShopMenu extends Menu {
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+
     private static final ItemStack EMPTY = new ItemStack(Material.BARRIER);
     private static final ItemStack ACCEPT = new ItemStack(Material.POISONOUS_POTATO);
 
