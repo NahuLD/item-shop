@@ -9,6 +9,7 @@ public final class ShopUser {
 
     private final UUID uniqueId;
     private long lastHaggleAttempt = 0;
+    private double haggleModifier;
 
     public ShopUser(@NotNull UUID uniqueId) {
         this.uniqueId = uniqueId;
@@ -21,6 +22,14 @@ public final class ShopUser {
 
     public long getLastHaggleAttempt() {
         return lastHaggleAttempt;
+    }
+
+    public double getHaggleModifier() {
+        return haggleModifier;
+    }
+
+    public void setHaggleModifier(double haggleModifier) {
+        this.haggleModifier = haggleModifier;
     }
 
     public void updateHaggleAttempt() {

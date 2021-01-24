@@ -47,7 +47,7 @@ public class ConfirmDeletionMenu extends Menu {
                 color("&aAccept"),
                 click -> {
                     itemShopManager.removeItem(sellableItem.getId());
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     return true;
                 }
             )
@@ -58,7 +58,7 @@ public class ConfirmDeletionMenu extends Menu {
                 DENY,
                 color("&cCancel"),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     return true;
                 }
             )

@@ -3,3 +3,9 @@ haggle-percentage-range: 10.0
 
 # Cooldown for each haggle attempt in seconds.
 haggle-attempt-cooldown: 60
+
+# Message sent when the transaction was finished successfully.
+successful-transaction: '&green&Successfully sold items! Amount deposited: __&gold&$%amount%__'
+
+# Message sent when the transaction could not be finished.
+unexpected-error-transaction: '&red&An unexpected error has occurred while processing transaction: &gray&%error_message%'

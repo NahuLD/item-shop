@@ -34,35 +34,39 @@ public class EditingMenu extends Menu {
             "Editing Menu",
             new String[]{ "i md pn c" }
         );
-
         inventoryGui.addElement(
             staticElement(
                 'i',
                 sellableItem.toItemStack(),
-                formatSellableItem(sellableItem),
+                color(
+                    "&aSellable Item",
+                    "&8&m-------------------------",
+                    "&7Id: &d" + sellableItem.getId(),
+                    "&7Name: &f" + sellableItem.getName().orElse("&cN/A"),
+                    "&7Price: &a$" + sellableItem.getPrice(),
+                    "&8&m-------------------------"
+                ),
                 click -> true
             )
         );
-
         inventoryGui.addElement(
             staticElement(
                 'c',
                 EXIT,
-                color("&cClose"),
+                color("&cExit"),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     return true;
                 }
             )
         );
-
         inventoryGui.addElement(
             staticElement(
                 'm',
                 new ItemStack(sellableItem.getMaterial()),
                 color("&eMaterial", "&7Name: &f" + sellableItem.getMaterial().toString()),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     inputMenu(
                         this,
                         player,
@@ -80,14 +84,13 @@ public class EditingMenu extends Menu {
                 }
             )
         );
-
         inventoryGui.addElement(
             staticElement(
                 'd',
                 DATA,
                 color("&eData", "&7Id: &f" + sellableItem.getData()),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     inputMenu(
                         this,
                         player,
@@ -105,27 +108,25 @@ public class EditingMenu extends Menu {
                 }
             )
         );
-
         inventoryGui.addElement(
             staticElement(
                 'p',
                 PRICE,
                 color("&ePrice", "&7Price: &a$" + sellableItem.getPrice()),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     editPriceMenu(this, player, sellableItem);
                     return true;
                 }
             )
         );
-
         inventoryGui.addElement(
             staticElement(
                 'n',
                 NAME,
                 color("&eName", "&7Name: &f" + sellableItem.getName().orElse("&cN/A")),
                 click -> {
-                    inventoryGui.close();
+                    inventoryGui.close(false);
                     inputMenu(
                         this,
                         player,

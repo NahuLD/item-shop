@@ -24,7 +24,6 @@ public class AdminConfigurationMenu extends Menu {
     public static final ItemStack EXIT = new ItemStack(Material.WHEAT);
     public static final ItemStack FILLER = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
     private static final ItemStack SORTING = new ItemStack(Material.EYE_OF_ENDER);
-
     private static final ItemStack FORWARD_ARROW = new ItemStack(Material.MAGMA_CREAM);
     private static final ItemStack PREVIOUS_ARROW = new ItemStack(Material.SPECKLED_MELON);
 
@@ -41,10 +40,6 @@ public class AdminConfigurationMenu extends Menu {
 
     @Override
     protected @NotNull InventoryGui newInventory(@NotNull Player player) {
-        List<SellableItem> items = itemShopManager.getItems().stream()
-            .sorted(sortType.getComparator())
-            .collect(Collectors.toList());
-
         InventoryGui inventoryGui = new InventoryGui(
             getPlugin(),
             color("&cItem Sell Config")[0],
@@ -62,7 +57,7 @@ public class AdminConfigurationMenu extends Menu {
             ItemStack itemStack = click.getEvent().getCurrentItem();
             if (itemShopManager.getItemByItemStack(itemStack).isPresent()) return true;
 
-            inventoryGui.close();
+            inventoryGui.close(false);
             EditingMenu.editPriceMenu(this, player, itemShopManager.createSellableItem(itemStack, 0));
             return true;
         });
@@ -83,47 +78,53 @@ public class AdminConfigurationMenu extends Menu {
                 )),
                 click -> {
                     this.sortType = SortType.next(this.sortType);
-                    reopen(player);
+                    inventoryGui.draw();
                     return true;
                 }
             ))
         );
         // all items
-        GuiElementGroup elementGroup = new GuiElementGroup(' ');
-        items.stream().map(sellableItem ->
-            staticElement(
-                ' ',
-                sellableItem.toItemStack(),
-                color(
-                    sellableItem.getName().orElse("&cN/A"),
-                    "&7Sell Price: &a$" + sellableItem.getPrice(),
-                    "&7",
-                    "&eLeft Click &7to &eEdit Price",
-                    "&9Shift-Left &7for &9Edit Menu",
-                    "&cRight-Click &7to &cDelete Item",
-                    "&9Shift-Right &7to &9Quick Delete"
-                ),
-                click -> {
-                    switch (click.getType()) {
-                        case RIGHT:
-                            new ConfirmDeletionMenu(itemShopPlugin, sellableItem).open(player);
-                            break;
-                        case SHIFT_RIGHT:
-                            itemShopManager.removeItem(sellableItem.getId());
-                            reopen(player);
-                            break;
-                        case LEFT:
-                            EditingMenu.editPriceMenu(this, player, sellableItem);
-                            break;
-                        case SHIFT_LEFT:
-                            new EditingMenu(itemShopPlugin, sellableItem).open(player);
-                            break;
+        inventoryGui.addElement(new DynamicGuiElement(' ', viewer -> {
+            List<SellableItem> items = itemShopManager.getItems().stream()
+                .sorted(sortType.getComparator())
+                .collect(Collectors.toList());
+
+            GuiElementGroup elementGroup = new GuiElementGroup(' ');
+            items.stream().map(sellableItem ->
+                staticElement(
+                    ' ',
+                    sellableItem.toItemStack(),
+                    color(
+                        sellableItem.getName().orElse("&cN/A"),
+                        "&7Sell Price: &a$" + sellableItem.getPrice(),
+                        "&7",
+                        "&eLeft Click &7to &eEdit Price",
+                        "&9Shift-Left &7for &9Edit Menu",
+                        "&cRight-Click &7to &cDelete Item",
+                        "&9Shift-Right &7to &9Quick Delete"
+                    ),
+                    click -> {
+                        switch (click.getType()) {
+                            case RIGHT:
+                                new ConfirmDeletionMenu(itemShopPlugin, sellableItem).open(player);
+                                break;
+                            case SHIFT_RIGHT:
+                                itemShopManager.removeItem(sellableItem.getId());
+                                inventoryGui.draw();
+                                break;
+                            case LEFT:
+                                EditingMenu.editPriceMenu(this, player, sellableItem);
+                                break;
+                            case SHIFT_LEFT:
+                                new EditingMenu(itemShopPlugin, sellableItem).open(player);
+                                break;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            )
-        ).forEach(elementGroup::addElement);
-        inventoryGui.addElement(elementGroup);
+                )
+            ).forEach(elementGroup::addElement);
+            return elementGroup;
+        }));
         // arrows
         inventoryGui.addElement(forwardArrow());
         inventoryGui.addElement(previousArrow());

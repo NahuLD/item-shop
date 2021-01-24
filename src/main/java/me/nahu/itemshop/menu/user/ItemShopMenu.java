@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.Objects;
+import java.util.function.DoubleConsumer;
 
 import static me.nahu.itemshop.menu.admin.AdminConfigurationMenu.FILLER;
 import static me.nahu.itemshop.utils.Utilities.color;
@@ -26,9 +27,9 @@ public class ItemShopMenu extends Menu {
 
     private final ItemShopManager itemShopManager;
     private final double hagglePercentageRange;
-    private double haggleModifier = 1;
 
     private BukkitTask task;
+    private DoubleConsumer consumer;
 
     public ItemShopMenu(@NotNull ItemShopPlugin plugin) {
         super(plugin);
@@ -87,7 +88,7 @@ public class ItemShopMenu extends Menu {
                     "&aSell Items",
                     "&8&m-------------------------",
                     "&7",
-                    "&7Sell Price: &a&n$" + DECIMAL_FORMAT.format(calculateTotal() * haggleModifier),
+                    "&7Sell Price: &a&n$" + DECIMAL_FORMAT.format(calculateTotal() * shopUser.getHaggleModifier()),
                     "&7",
                     "&7Max Worth: &e$" + DECIMAL_FORMAT.format(calculateTotal() * (hagglePercentageRange + 1)),
                     "&7Min Worth: &c$" + DECIMAL_FORMAT.format(calculateTotal() * (1 - hagglePercentageRange)),
@@ -99,14 +100,17 @@ public class ItemShopMenu extends Menu {
                 click -> {
                     switch (click.getType()) {
                         case LEFT:
-                            // Right click to haggle
+                            if (consumer == null) {
+                                break;
+                            }
+                            consumer.accept(calculateTotal() * shopUser.getHaggleModifier());
                             break;
                         case RIGHT:
-                            if (!shopUser.canHaggle()) break;
-
+                            if (!shopUser.canHaggle()) {
+                                break;
+                            }
                             shopUser.updateHaggleAttempt();
-                            haggleModifier = calculateHaggleModifier();
-                            System.out.println(haggleModifier);
+                            shopUser.setHaggleModifier(calculateHaggleModifier());
 
                             inventoryGui.draw(); // update
                             break;
@@ -125,6 +129,10 @@ public class ItemShopMenu extends Menu {
 
         inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
         return inventoryGui;
+    }
+
+    public void setHandleTransactionAction(@NotNull DoubleConsumer consumer) {
+        this.consumer = consumer;
     }
 
     private double calculateHaggleModifier() {
