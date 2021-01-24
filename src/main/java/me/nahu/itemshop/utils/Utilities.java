@@ -13,6 +13,10 @@ import java.util.stream.Stream;
 public final class Utilities {
     private static final Plugin PLUGIN = ItemShopPlugin.getPlugin(ItemShopPlugin.class);
 
+    public static String[] merge(@NotNull String[]... arrays) {
+        return Stream.of(arrays).flatMap(Stream::of).toArray(String[]::new);
+    }
+
     public static String[] color(String[] existing, String... input) {
         return color(Stream.concat(Arrays.stream(existing), Stream.of(input)).toArray(String[]::new));
     }

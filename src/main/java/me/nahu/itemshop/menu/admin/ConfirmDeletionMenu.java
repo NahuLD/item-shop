@@ -12,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static me.nahu.itemshop.utils.Utilities.color;
 
-public class DeletionMenu extends Menu {
+public class ConfirmDeletionMenu extends Menu {
     private static final ItemStack ACCEPT = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 13);
     private static final ItemStack DENY = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 14);
 
     private final ItemShopManager itemShopManager;
     private final SellableItem sellableItem;
 
-    public DeletionMenu(@NotNull ItemShopPlugin plugin, @NotNull SellableItem sellableItem) {
+    public ConfirmDeletionMenu(@NotNull ItemShopPlugin plugin, @NotNull SellableItem sellableItem) {
         super(plugin);
         this.itemShopManager = plugin.getItemShopManager();
         this.sellableItem = sellableItem;

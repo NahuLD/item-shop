@@ -13,11 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
+import static me.nahu.itemshop.menu.admin.AdminConfigurationMenu.FILLER;
 import static me.nahu.itemshop.utils.Utilities.color;
 
 public class ItemShopMenu extends Menu {
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
     private static final ItemStack EMPTY = new ItemStack(Material.BARRIER);
     private static final ItemStack ACCEPT = new ItemStack(Material.POISONOUS_POTATO);
 
@@ -38,30 +41,60 @@ public class ItemShopMenu extends Menu {
         InventoryGui inventoryGui = new InventoryGui(
             getPlugin(),
             "Item Shop",
-            new String[]{ "        a" }
+            new String[]{
+                "ppppppppp",
+                "         ",
+                "ppppppppa"
+            }
         );
 
         ShopUser shopUser = itemShopManager.getShopUser(player);
-        inventoryGui.addElement(new DynamicGuiElement('a', (viewer) ->
-            (getInventoryContents().size() <= 1) ?
-            staticElement(
-                'a',
-                EMPTY,
-                color("&cPlace items to sell!"),
-                click -> true
-            ) :
-            staticElement(
+        inventoryGui.addElement(new DynamicGuiElement('a', (viewer) -> {
+            if (getInventoryContents().size() <= 1) {
+                return staticElement(
+                    'a',
+                    EMPTY,
+                    color(
+                        "&cUnable to Sell",
+                        "&8&m-------------------------",
+                        "&7",
+                        "&7Place items to sell!",
+                        "&7",
+                        "&8&m-------------------------"
+                    ),
+                    click -> true
+                );
+            }
+            if (itemShopManager.hasInvalidItems(getVirtualInventory().getContents())) {
+                return staticElement(
+                    'a',
+                    EMPTY,
+                    color(
+                        "&cUnable to Sell",
+                        "&8&m-------------------------",
+                        "&7",
+                        "&7You can &cnot sell &7some &citems&7!",
+                        "&7",
+                        "&8&m-------------------------"
+                    ),
+                    click -> true
+                );
+            }
+            return staticElement(
                 'a',
                 ACCEPT,
                 color(
-                    "&aAccept",
-                    "&7Total: &d$" + (int) (calculateTotal() * haggleModifier),
+                    "&aSell Items",
+                    "&8&m-------------------------",
                     "&7",
-                    "&7Unchanged total: &e$" + calculateTotal(),
-                    "&7Maximum potential total: &a$" + calculateTotal() * (hagglePercentageRange + 1),
-                    "&7Minimum potential total: &c$" + calculateTotal() * (1 - hagglePercentageRange),
-                    "&8Right Click to &eHaggle",
-                    "&8Left Click to &aSell"
+                    "&7Sell Price: &a&n$" + DECIMAL_FORMAT.format(calculateTotal() * haggleModifier),
+                    "&7",
+                    "&7Max Worth: &e$" + DECIMAL_FORMAT.format(calculateTotal() * (hagglePercentageRange + 1)),
+                    "&7Min Worth: &c$" + DECIMAL_FORMAT.format(calculateTotal() * (1 - hagglePercentageRange)),
+                    "&7",
+                    "&8[&6Left-Click&8] &7to &aSell Items&7.",
+                    "&8[&6Right-Click&8] &7to &eHaggle Price&7.",
+                    "&8&m-------------------------"
                 ),
                 click -> {
                     switch (click.getType()) {
@@ -69,8 +102,8 @@ public class ItemShopMenu extends Menu {
                             // Right click to haggle
                             break;
                         case RIGHT:
-                            if (!shopUser.canHaggle())
-                                break;
+                            if (!shopUser.canHaggle()) break;
+
                             shopUser.updateHaggleAttempt();
                             haggleModifier = calculateHaggleModifier();
                             System.out.println(haggleModifier);
@@ -80,15 +113,17 @@ public class ItemShopMenu extends Menu {
                     }
                     return true;
                 }
-            )
-        ));
+            );
+        }));
 
         inventoryGui.addElement(
             storageElement(' ', () -> {
                 if (task != null) task.cancel();
-                task = Utilities.runDelayedTask(inventoryGui::draw, 20);
+                task = Utilities.runDelayedTask(inventoryGui::draw, 10);
             })
         );
+
+        inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
         return inventoryGui;
     }
 

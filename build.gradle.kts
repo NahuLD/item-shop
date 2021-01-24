@@ -24,8 +24,8 @@ repositories {
     }
 
     maven {
-        name = "papermc"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        name = "ashcon-snapshots"
+        url = uri("https://repo.ashcon.app/nexus/content/repositories/snapshots/")
     }
 
     maven {
@@ -39,8 +39,8 @@ repositories {
     }
 
     maven {
-        name = "codemc-repo"
-        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
+        name = "dmulloy2-repo"
+        url = uri("https://repo.dmulloy2.net/nexus/repository/public/")
     }
 
     maven {
@@ -53,12 +53,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("app.ashcon:sportpaper:1.8.8-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:20.1.0")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
+        exclude("org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT")
+    }
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
     implementation("co.aikar:acf-bukkit:0.5.0-SNAPSHOT")
     implementation("de.themoep:minedown:1.6.2-SNAPSHOT")
-    implementation("net.wesjd:anvilgui:1.4.0-SNAPSHOT")
     implementation(files("libs/InventoryGui.jar"))
 }
 

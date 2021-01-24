@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Subcommand;
 import me.nahu.itemshop.ItemShopPlugin;
-import me.nahu.itemshop.menu.admin.AdminMenu;
+import me.nahu.itemshop.menu.admin.AdminConfigurationMenu;
 import me.nahu.itemshop.menu.user.ItemShopMenu;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +33,6 @@ public final class ItemShopCommand extends BaseCommand {
     public void admin(
         @NotNull Player player
     ) {
-        new AdminMenu(itemShopPlugin).open(player);
+        new AdminConfigurationMenu(itemShopPlugin).open(player);
     }
 }

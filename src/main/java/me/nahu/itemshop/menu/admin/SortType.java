@@ -7,43 +7,43 @@ import java.util.Comparator;
 
 public enum SortType {
     NORMAL(
-        'n',
+        true,
         "Normal",
         (first, second) -> first.getId() - second.getId()
     ),
     ALPHABETICAL(
-        'a',
-        "Alphabetical",
+        "A-Z",
         (first, second) -> first.getName().orElse("").compareTo(second.getName().orElse(""))
     ),
     REVERSED_ALPHABETICAL(
-        'z',
-        "Reversed Alphabetical",
+        "Z-A",
         (first, second) -> second.getName().orElse("").compareTo(first.getName().orElse(""))
     ),
     LOW_PRICE(
-        'l',
-        "Low Price",
+        "Price Low-High",
         (first, second) -> first.getPrice() - second.getPrice()
     ),
     HIGH_PRICE(
-        'h',
-        "High Price",
+        "Price High-Low",
         (first, second) -> second.getPrice() - first.getPrice()
     );
 
-    private final char slot;
+    private final boolean hidden;
     private final String name;
     private final Comparator<SellableItem> comparator;
 
-    SortType(char slot, @NotNull String name, @NotNull Comparator<SellableItem> comparator) {
-        this.slot = slot;
+    SortType(@NotNull String name, @NotNull Comparator<SellableItem> comparator) {
+        this(false, name, comparator);
+    }
+
+    SortType(boolean hidden, @NotNull String name, @NotNull Comparator<SellableItem> comparator) {
+        this.hidden = hidden;
         this.name = name;
         this.comparator = comparator;
     }
 
-    public char getSlot() {
-        return slot;
+    public boolean isHidden() {
+        return !hidden;
     }
 
     @NotNull
@@ -54,5 +54,14 @@ public enum SortType {
     @NotNull
     public Comparator<SellableItem> getComparator() {
         return comparator;
+    }
+
+    @NotNull
+    public static SortType next(SortType current) {
+        try {
+            return values()[current.ordinal() + 1];
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            return ALPHABETICAL;
+        }
     }
 }

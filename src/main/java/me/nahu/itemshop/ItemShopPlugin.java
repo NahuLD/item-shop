@@ -4,6 +4,7 @@ import co.aikar.commands.BukkitCommandManager;
 import me.nahu.itemshop.command.ItemShopCommand;
 import me.nahu.itemshop.shop.SellableItem;
 import me.nahu.itemshop.shop.ShopUser;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +20,9 @@ public class ItemShopPlugin extends JavaPlugin {
     }
 
     private ItemShopManager itemShopManager;
+
     private BukkitCommandManager commandManager;
+    private Economy economy;
 
     private double hagglePercentageRange;
 
@@ -32,6 +35,8 @@ public class ItemShopPlugin extends JavaPlugin {
 
         int haggleAttemptCooldown = getConfig().getInt("haggle-attempt-cooldown");
         ShopUser.setHaggleAttemptCooldown(TimeUnit.SECONDS.toMillis(haggleAttemptCooldown));
+
+        economy = loadEconomy();
 
         File itemsFile = new File(getDataFolder(), "items.yml");
         itemShopManager = new ItemShopManager(itemsFile);
@@ -58,7 +63,19 @@ public class ItemShopPlugin extends JavaPlugin {
         return itemShopManager;
     }
 
+    @NotNull
+    public Economy getEconomy() {
+        return economy;
+    }
+
     public double getHagglePercentageRange() {
         return hagglePercentageRange;
+    }
+
+    private Economy loadEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return null;
+        }
+        return getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
 }

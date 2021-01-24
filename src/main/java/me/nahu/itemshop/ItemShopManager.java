@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import me.nahu.itemshop.shop.SellableItem;
 import me.nahu.itemshop.shop.ShopUser;
 import me.nahu.itemshop.utils.Utilities;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,13 +16,18 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ItemShopManager {
+    private static final Logger LOGGER = Logger.getLogger(ItemShopManager.class.getName());
+
     private final Map<Integer, SellableItem> sellableItems;
     private final LoadingCache<UUID, ShopUser> shopUsers = CacheBuilder.newBuilder()
         .expireAfterAccess(5, TimeUnit.MINUTES)
@@ -42,6 +46,7 @@ public class ItemShopManager {
         this.configuration = YamlConfiguration.loadConfiguration(configurationFile);
 
         this.sellableItems = loadItems();
+        LOGGER.info("Loaded '" + sellableItems.size() + "' sellable items.");
     }
 
     @NotNull
@@ -61,8 +66,27 @@ public class ItemShopManager {
             .findFirst();
     }
 
+    /**
+     * Get the combined price of a stack of items, this takes the amount of items into account.
+     * @param itemStack Item to check.
+     * @return Combined price.
+     */
     public int getCombinedPrice(@NotNull ItemStack itemStack) {
-        return getItemByItemStack(itemStack).map(item -> item.getPrice() * itemStack.getAmount()).orElse(0);
+        return getItemByItemStack(itemStack)
+            .map(item -> item.getPrice() * itemStack.getAmount())
+            .orElse(0);
+    }
+
+    /**
+     * Check if the collection of items passed has any invalid items.
+     * @param items Items to be checked.
+     * @return True if there are, false if none.
+     */
+    public boolean hasInvalidItems(ItemStack @NotNull... items) {
+        return Stream.of(items)
+            .filter(Objects::nonNull)
+            .map(this::getItemByItemStack)
+            .anyMatch(optional -> !optional.isPresent());
     }
 
     /**
@@ -95,7 +119,6 @@ public class ItemShopManager {
      */
     @NotNull
     private SellableItem loadItem(@NotNull String id) {
-        Bukkit.getLogger().info("Loading sellable item with id: " + id);
         return (SellableItem) configuration.get(id);
     }
 

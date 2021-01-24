@@ -4,7 +4,7 @@ import de.themoep.inventorygui.InventoryGui;
 import me.nahu.itemshop.ItemShopPlugin;
 import me.nahu.itemshop.menu.Menu;
 import me.nahu.itemshop.shop.SellableItem;
-import net.wesjd.anvilgui.AnvilGUI;
+import me.nahu.itemshop.utils.SignMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
+import static me.nahu.itemshop.menu.admin.AdminConfigurationMenu.EXIT;
 import static me.nahu.itemshop.utils.Utilities.color;
 
 public class EditingMenu extends Menu {
-    private static final ItemStack CLOSE = new ItemStack(Material.BARRIER);
     private static final ItemStack DATA = new ItemStack(Material.BEACON);
     private static final ItemStack PRICE = new ItemStack(Material.DOUBLE_PLANT);
     private static final ItemStack NAME = new ItemStack(Material.SIGN);
@@ -47,7 +47,7 @@ public class EditingMenu extends Menu {
         inventoryGui.addElement(
             staticElement(
                 'c',
-                CLOSE,
+                EXIT,
                 color("&cClose"),
                 click -> {
                     inventoryGui.close();
@@ -67,14 +67,13 @@ public class EditingMenu extends Menu {
                         this,
                         player,
                         sellableItem.getMaterial().toString(),
-                        new ItemStack(sellableItem.getMaterial()),
                         input -> {
-                            Material newMaterial = Material.matchMaterial(input);
+                            Material newMaterial = Material.matchMaterial(input[0]);
                             if (newMaterial == null) {
-                                return AnvilGUI.Response.text("Invalid material!");
+                                return true;
                             }
                             sellableItem.setMaterial(newMaterial);
-                            return AnvilGUI.Response.close();
+                            return false;
                         }
                     );
                     return true;
@@ -93,13 +92,12 @@ public class EditingMenu extends Menu {
                         this,
                         player,
                         String.valueOf(sellableItem.getData()),
-                        DATA,
                         input -> {
                             try {
-                                sellableItem.setData(Short.parseShort(input));
-                                return AnvilGUI.Response.close();
+                                sellableItem.setData(Short.parseShort(input[0]));
+                                return false;
                             } catch (NumberFormatException exception) {
-                                return AnvilGUI.Response.text("Invalid number!");
+                                return true;
                             }
                         }
                     );
@@ -132,11 +130,10 @@ public class EditingMenu extends Menu {
                         this,
                         player,
                         sellableItem.getName().orElse("N/A"),
-                        NAME,
                         input -> {
-                            String[] newName = color(input);
+                            String[] newName = color(input[0]);
                             sellableItem.setName((newName.length <= 0) ? null : newName[0]);
-                            return AnvilGUI.Response.close();
+                            return false;
                         }
                     );
                     return true;
@@ -146,41 +143,36 @@ public class EditingMenu extends Menu {
         return inventoryGui;
     }
 
-    public static void editPriceMenu(@NotNull Menu menu, @NotNull Player player, @NotNull SellableItem sellableItem) {
-        inputMenu(
-            menu,
-            player,
-            "$",
-            sellableItem.toItemStack(),
-            input -> {
-                try {
-                    int newPrice = Integer.parseInt(input.replace("$", ""));
-                    if (newPrice < 1) {
-                        return AnvilGUI.Response.text("Must be greater than zero!");
-                    }
-                    sellableItem.setPrice(newPrice);
-                    return AnvilGUI.Response.close();
-                } catch (NumberFormatException exception) {
-                    return AnvilGUI.Response.text("Not a valid number!");
-                }
+    public static void editPriceMenu(
+        @NotNull Menu menu,
+        @NotNull Player player,
+        @NotNull SellableItem sellableItem
+    ) {
+        inputMenu(menu, player, "$", response -> {
+            try {
+                int newPrice = Integer.parseInt(response[0]);
+                sellableItem.setPrice(newPrice);
+                return false;
+            } catch (NumberFormatException exception) {
+                return true;
             }
-        );
+        });
     }
 
     private static void inputMenu(
         @NotNull Menu menu,
         @NotNull Player player,
         @NotNull String text,
-        @NotNull ItemStack itemStack,
-        @NotNull Function<String, AnvilGUI.Response> responseFunction
+        @NotNull Function<String[], Boolean> response
     ) {
-        new AnvilGUI.Builder()
-            .onComplete((clicker, input) -> responseFunction.apply(input))
-            .onClose(menu::open)
-            .preventClose()
-            .text(text)
-            .itemLeft(itemStack)
-            .plugin(menu.getPlugin())
-            .open(player);
+        new SignMenu(menu.getPlugin())
+            .listener((clicker, input) -> {
+                if (!response.apply(input)) {
+                    menu.open(player);
+                    return;
+                }
+                inputMenu(menu, player, text, response); // retry
+            })
+            .show(player);
     }
 }
