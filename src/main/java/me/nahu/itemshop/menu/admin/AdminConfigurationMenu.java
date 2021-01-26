@@ -83,7 +83,7 @@ public class AdminConfigurationMenu extends Menu {
             ItemStack itemStack = click.getEvent().getCurrentItem();
             if (itemShopManager.getItemByItemStack(itemStack).isPresent()) return true;
 
-            inventoryGui.close(false);
+            inventoryGui.close();
             EditingMenu.editPriceMenu(this, player, itemShopManager.createSellableItem(itemStack, 0));
             return true;
         });

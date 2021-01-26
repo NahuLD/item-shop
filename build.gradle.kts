@@ -88,5 +88,5 @@ bukkit {
     description = "Very nice items shop plugin!"
     main = "me.nahu.itemshop.ItemShopPlugin"
     authors = listOf("NahuLD")
-    depend = listOf("Vault")
+    depend = listOf("Vault", "PlaceholderAPI")
 }

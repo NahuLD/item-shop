@@ -40,6 +40,11 @@ public class ItemShopExpansion extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean canRegister() {
+        return true; // Thanks PAPI
+    }
+
+    @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if (player == null) {
             return "N/A";
@@ -52,6 +57,10 @@ public class ItemShopExpansion extends PlaceholderExpansion {
                 response = String.valueOf(shopUser.canHaggle());
                 break;
             case "haggle_attempt_formatted":
+                if (shopUser.canHaggle()) {
+                    response = "Now";
+                    break;
+                }
                 response = DATE_TIME_FORMATTER.format(Instant.ofEpochMilli(shopUser.getNextHaggleAttempt()));
                 break;
             case "haggle_modifier":
