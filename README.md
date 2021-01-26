@@ -1,6 +1,13 @@
 # ItemShop
 Item shop plugin commissioned by KawaiikamiKait.
 
+## Permission nodes
+Node               | Description
+ ------------------|----------------------------------------
+itemshop.*         | Access to all subcommands.
+itemshop.sell      | Access to the sell UI.
+itemshop.admin     | Access to the admin UI.
+
 ## Placeholders for PAPI
 _Requests MUST be appended with a Player._
 

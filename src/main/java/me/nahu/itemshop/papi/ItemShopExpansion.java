@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
@@ -61,7 +62,11 @@ public class ItemShopExpansion extends PlaceholderExpansion {
                     response = "Now";
                     break;
                 }
-                response = DATE_TIME_FORMATTER.format(Instant.ofEpochMilli(shopUser.getNextHaggleAttempt()));
+                response = DATE_TIME_FORMATTER.format(
+                    Instant.ofEpochMilli(shopUser.getNextHaggleAttempt())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime()
+                );
                 break;
             case "haggle_modifier":
                 response = "x" + DECIMAL_FORMAT.format(shopUser.getHaggleModifier());

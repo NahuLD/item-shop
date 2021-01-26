@@ -41,7 +41,7 @@ public final class ShopUser {
     }
 
     public boolean canHaggle() {
-        return (lastHaggleAttempt + haggleAttemptCooldown) <= System.currentTimeMillis();
+        return getNextHaggleAttempt() <= System.currentTimeMillis();
     }
 
     public long getNextHaggleAttempt() {
