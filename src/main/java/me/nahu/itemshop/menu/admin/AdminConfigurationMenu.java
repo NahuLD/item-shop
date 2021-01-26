@@ -81,9 +81,10 @@ public class AdminConfigurationMenu extends Menu {
         // player inventory handler
         inventoryGui.setPlayerInventoryAction(click -> {
             ItemStack itemStack = click.getEvent().getCurrentItem();
-            if (itemShopManager.getItemByItemStack(itemStack).isPresent()) return true;
-
-            inventoryGui.close();
+            if (itemStack == null || itemShopManager.getItemByItemStack(itemStack).isPresent()) {
+                return true;
+            }
+            inventoryGui.destroy();
             EditingMenu.editPriceMenu(this, player, itemShopManager.createSellableItem(itemStack, 0));
             return true;
         });
@@ -173,6 +174,7 @@ public class AdminConfigurationMenu extends Menu {
                 ),
                 click -> {
                     inventoryGui.close();
+                    inventoryGui.destroy();
                     return true;
                 }
             )
@@ -180,6 +182,8 @@ public class AdminConfigurationMenu extends Menu {
 
         // filler
         inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
+
+        inventoryGui.setCloseAction(close -> false);
         return inventoryGui;
     }
 }
