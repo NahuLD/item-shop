@@ -1,5 +1,6 @@
 package me.nahu.itemshop.shop;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -45,7 +46,15 @@ public final class ShopUser {
     }
 
     public long getNextHaggleAttempt() {
-        return (lastHaggleAttempt + haggleAttemptCooldown);
+        return (getLastHaggleAttempt() + haggleAttemptCooldown);
+    }
+
+    public String formatNextHaggleAttempt() {
+        if (canHaggle()) return "Now";
+        return DurationFormatUtils.formatDuration(
+            getNextHaggleAttempt() - System.currentTimeMillis(),
+            "mm:ss"
+        );
     }
 
     public static void setHaggleAttemptCooldown(long haggleAttemptCooldown) {

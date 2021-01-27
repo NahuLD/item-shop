@@ -44,4 +44,13 @@ public final class Utilities {
             }
         }.runTaskAsynchronously(PLUGIN);
     }
+
+    public static BukkitTask runRepeatedTask(@NotNull Runnable runnable, int period) {
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }.runTaskTimer(PLUGIN, 0L, period);
+    }
 }

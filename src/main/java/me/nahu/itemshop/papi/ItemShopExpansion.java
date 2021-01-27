@@ -7,8 +7,6 @@ import me.nahu.itemshop.shop.ShopUser;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
@@ -58,15 +56,7 @@ public class ItemShopExpansion extends PlaceholderExpansion {
                 response = String.valueOf(shopUser.canHaggle());
                 break;
             case "haggle_attempt_formatted":
-                if (shopUser.canHaggle()) {
-                    response = "Now";
-                    break;
-                }
-                response = DATE_TIME_FORMATTER.format(
-                    Instant.ofEpochMilli(shopUser.getNextHaggleAttempt())
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()
-                );
+                response = shopUser.formatNextHaggleAttempt();
                 break;
             case "haggle_modifier":
                 response = "x" + DECIMAL_FORMAT.format(shopUser.getHaggleModifier());

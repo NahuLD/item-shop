@@ -30,7 +30,10 @@ public class ItemShopMenu extends Menu {
     private final double hagglePercentageRange;
 
     private BukkitTask task;
+    private BukkitTask updater;
+
     private DoubleConsumer consumer;
+    private boolean canUpdate;
 
     public ItemShopMenu(@NotNull ItemShopPlugin plugin) {
         super(plugin);
@@ -51,6 +54,7 @@ public class ItemShopMenu extends Menu {
         );
 
         ShopUser shopUser = itemShopManager.getShopUser(player);
+
         inventoryGui.addElement(new DynamicGuiElement('a', (viewer) -> {
             List<ItemStack> contents = getInventoryContents();
             if (contents.size() <= 0) {
@@ -97,9 +101,12 @@ public class ItemShopMenu extends Menu {
                     "&7",
                     "&8[&6Left-Click&8] &7to &aSell Items&7.",
                     "&8[&6Right-Click&8] &7to &eHaggle Price&7.",
+                    "&7",
+                    "&7Next Haggle: " + ((shopUser.canHaggle()) ? "&a" : "&e").concat(shopUser.formatNextHaggleAttempt()),
                     "&8&m-------------------------"
                 ),
                 click -> {
+                    inventoryGui.draw();
                     switch (click.getType()) {
                         case LEFT:
                             if (consumer != null) {
@@ -113,8 +120,6 @@ public class ItemShopMenu extends Menu {
                             }
                             shopUser.updateHaggleAttempt();
                             shopUser.setHaggleModifier(calculateHaggleModifier());
-
-                            inventoryGui.draw(); // update
                             break;
                     }
                     return true;
@@ -125,14 +130,22 @@ public class ItemShopMenu extends Menu {
         inventoryGui.addElement(
             storageElement(' ', () -> {
                 if (task != null) task.cancel();
-                task = Utilities.runDelayedTask(inventoryGui::draw, 10);
+
+                canUpdate = false;
+                task = Utilities.runDelayedTask(() -> canUpdate = true, 10);
             })
         );
+
+        updater = Utilities.runRepeatedTask(() -> {
+            if (canUpdate) inventoryGui.draw();
+        }, 5);
 
         inventoryGui.addElement(staticElement('p', FILLER, color("&7", "&7"), click -> true));
 
         inventoryGui.setCloseAction(close -> {
-            // return items
+            if (updater != null) updater.cancel();
+            if (task != null) task.cancel();
+
             player.getInventory().addItem(getInventoryContents().parallelStream().toArray(ItemStack[]::new));
             return true;
         });
