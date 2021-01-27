@@ -31,9 +31,9 @@ public class ItemShopMenu extends Menu {
 
     private BukkitTask task;
     private BukkitTask updater;
+    private boolean canUpdate = true;
 
     private DoubleConsumer consumer;
-    private boolean canUpdate;
 
     public ItemShopMenu(@NotNull ItemShopPlugin plugin) {
         super(plugin);

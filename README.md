@@ -6,6 +6,7 @@ Node               | Description
  ------------------|----------------------------------------
 itemshop.*         | Access to all subcommands.
 itemshop.sell      | Access to the sell UI.
+itemshop.open      | Open the sell UI to any online player.
 itemshop.admin     | Access to the admin UI.
 
 ## Placeholders for PAPI

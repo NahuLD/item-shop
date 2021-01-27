@@ -1,16 +1,15 @@
 package me.nahu.itemshop.command;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.annotation.*;
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import de.themoep.minedown.MineDown;
 import me.nahu.itemshop.ItemShopPlugin;
 import me.nahu.itemshop.menu.admin.AdminConfigurationMenu;
 import me.nahu.itemshop.menu.user.ItemShopMenu;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,6 +51,16 @@ public final class ItemShopCommand extends BaseCommand {
             );
         });
         shopMenu.open(player);
+    }
+
+    @CommandAlias("open")
+    @CommandPermission("itemshop.open")
+    @CommandCompletion("@players")
+    public void open(
+        @NotNull CommandSender sender,
+        @NotNull OnlinePlayer target
+    ) {
+        sell(target.getPlayer());
     }
 
     @Subcommand("admin")
