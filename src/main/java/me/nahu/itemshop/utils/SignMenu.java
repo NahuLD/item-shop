@@ -54,7 +54,7 @@ public class SignMenu {
 
         open.getBlockPositionModifier().write(0, position);
         remove.getBlockPositionModifier().write(0, position);
-        remove.getBlockData().write(0, WrappedBlockData.createData(Material.AIR));
+        remove.getBlockData().write(0, WrappedBlockData.createData(Material.AIR, 0));
 
         try {
             PacketContainer block = protocol.createPacket(PacketType.Play.Server.BLOCK_CHANGE);
@@ -62,7 +62,7 @@ public class SignMenu {
                 PacketContainer update = protocol.createPacket(PacketType.Play.Server.UPDATE_SIGN);
 
                 block.getBlockPositionModifier().write(0, position);
-                block.getBlockData().write(0, WrappedBlockData.createData(Material.SIGN_POST));
+                block.getBlockData().write(0, WrappedBlockData.createData(Material.SIGN_POST, 0));
                 update.getBlockPositionModifier().write(0, position);
                 update.getChatComponentArrays().write(0, wrap());
 
@@ -136,13 +136,6 @@ public class SignMenu {
     public SignMenu color() {
         this.color = true;
         return this;
-    }
-
-    public enum Line {
-        FIRST,
-        SECOND,
-        THIRD,
-        FOURTH
     }
 
     public static class SignLocator implements Listener {

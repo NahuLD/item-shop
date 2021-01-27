@@ -1,6 +1,7 @@
 package me.nahu.itemshop;
 
 import co.aikar.commands.BukkitCommandManager;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import me.nahu.itemshop.command.ItemShopCommand;
 import me.nahu.itemshop.papi.ItemShopExpansion;
 import me.nahu.itemshop.shop.SellableItem;
@@ -29,6 +30,8 @@ public class ItemShopPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        MinecraftVersion.setCurrentVersion(MinecraftVersion.BOUNTIFUL_UPDATE);
+
         saveResource("items.yml", false);
         saveResource("config.yml", false);
 

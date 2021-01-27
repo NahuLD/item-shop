@@ -63,7 +63,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         exclude("org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT")
     }
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.4.0")
     compileOnly("me.clip:placeholderapi:2.10.9")
     implementation("co.aikar:acf-bukkit:0.5.0-SNAPSHOT")
     implementation("de.themoep:minedown:1.6.2-SNAPSHOT")
@@ -88,5 +88,5 @@ bukkit {
     description = "Very nice items shop plugin!"
     main = "me.nahu.itemshop.ItemShopPlugin"
     authors = listOf("NahuLD")
-    depend = listOf("Vault", "PlaceholderAPI")
+    depend = listOf("Vault", "PlaceholderAPI", "ProtocolLib")
 }
