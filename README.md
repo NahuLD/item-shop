@@ -15,14 +15,14 @@ _Requests MUST be appended with a Player._
 Placeholder                           | Return             | More Info
  -------------------------------------|--------------------|---------------------------------------------------------------------
 %itemshop_can_haggle%                 | true/false         | Whether the player can haggle.
-%itemshop_haggle_attempt_formatted%   | HH:mm:ss           | Next haggle attempt formatted, NOW if player can haggle.
+%itemshop_haggle_attempt_formatted%   | mm:ss              | Next haggle attempt formatted, NOW if player can haggle.
 %itemshop_haggle_modifier%            | x{$modifier}       | Modifier that will be applied with the aforementioned format.
 
 ## Configurable Messages Syntax
 
 ### Inline Formatting
 Description   | Syntax             | More Info
- --------------|--------------------|---------------------------------------------------------------------
+--------------|--------------------|---------------------------------------------------------------------
 Color legacy  |` &6Text           `| [Formatting codes](https://minecraft.gamepedia.com/Formatting_codes)
 Color         |` &gold&Text       `| [Color names](https://minecraft.gamepedia.com/Formatting_codes)
 Rainbow       |` &rainbow&Text    `| Inline Rainbow
