@@ -45,7 +45,7 @@ public class ItemShopMenu extends Menu {
     protected @NotNull InventoryGui newInventory(@NotNull Player player) {
         InventoryGui inventoryGui = new InventoryGui(
             getPlugin(),
-            "Item Shop",
+            color("&eSell Items")[0],
             new String[]{
                 "ppppppppp",
                 "         ",
